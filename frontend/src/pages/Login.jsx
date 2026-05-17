@@ -200,9 +200,9 @@ export default function Login() {
             }}
           >
             <div className="text-center mb-10">
-              <div className="lg:hidden w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-glow-sm">
+              <Link to="/" className="lg:hidden w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-glow-sm cursor-pointer hover:scale-105 active:scale-95 transition-all duration-300">
                 <Code2 size={32} className="text-white" />
-              </div>
+              </Link>
               <h2 className="text-3xl font-black mb-2" style={{ color: 'var(--login-heading)' }}>Welcome Back</h2>
               <p className="font-light" style={{ color: 'var(--login-subtext)' }}>Sign in to your account.</p>
             </div>

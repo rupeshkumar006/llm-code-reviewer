@@ -108,7 +108,7 @@ export default function ExportButton({ reviewId, code, disabled, tooltip }) {
       </button>
 
       {disabled && showTooltip && (
-        <div className="absolute top-full mt-2 right-0 bg-[var(--bg-surface-3)] border border-[var(--border)] text-[var(--text-primary)] text-[11px] font-bold py-2 px-3 rounded-xl shadow-2xl z-50 animate-slide-up whitespace-nowrap">
+        <div className="absolute top-full mt-2 right-0 bg-[var(--bg-surface-3)] border border-[var(--border)] text-[var(--text-primary)] text-[11px] font-bold py-2 px-3 rounded-xl shadow-2xl z-50 animate-slide-up w-48 sm:w-auto whitespace-normal sm:whitespace-nowrap text-center">
           {tooltip || "Sign in to export reviews"}
         </div>
       )}

@@ -15,8 +15,9 @@ const themes = [
 export default function Navbar({ remainingReviews }) {
   const { user, logout, isAuthenticated, isPro } = useAuth();
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const fromSignout = state?.fromSignout;
+  const location = useLocation();
+  const fromSignout = location.state?.fromSignout;
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
@@ -158,12 +159,15 @@ export default function Navbar({ remainingReviews }) {
             </div>
           ) : (
             <div className="flex items-center gap-2 h-full">
-              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/5 border border-orange-500/10 text-[10px] font-bold uppercase tracking-widest text-orange-500/80">
+              <div 
+                className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/5 border border-orange-500/10 text-[10px] font-bold uppercase tracking-widest text-orange-500/80 cursor-help"
+                title="Guest Mode: Progress and review history will not be saved."
+              >
                 <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
                 Guest
               </div>
-              <Link to="/login" className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] hover:text-orange-500 hover-underline-expand transition-colors shrink-0">
-                Sign In
+              <Link to="/login" className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] hover:text-orange-500 transition-colors shrink-0">
+                <span className="hover-underline-expand">Sign In</span>
               </Link>
             </div>
           )}
@@ -212,7 +216,10 @@ export default function Navbar({ remainingReviews }) {
             
             <div className="h-px bg-[var(--border)] my-1" />
             
-            <div className="flex items-center justify-between text-xs font-medium text-[var(--text-secondary)]">
+            <div 
+              className="flex items-center justify-between text-xs font-medium text-[var(--text-secondary)] cursor-help"
+              title={!isAuthenticated ? "Guest Mode: Progress and review history will not be saved." : undefined}
+            >
               <span>Account Type</span>
               {isAuthenticated ? (
                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
@@ -272,13 +279,15 @@ export default function Navbar({ remainingReviews }) {
                 <Code2 size={18} className="text-orange-500" />
                 Review Workspace
               </Link>
-              <Link 
-                to="/login" 
-                onClick={() => setShowMobileMenu(false)}
-                className="btn-secondary py-3.5 text-center rounded-xl font-bold text-sm"
-              >
-                Sign In
-              </Link>
+              {!isAuthPage && (
+                <Link 
+                  to="/login" 
+                  onClick={() => setShowMobileMenu(false)}
+                  className="btn-secondary py-3.5 text-center rounded-xl font-bold text-sm"
+                >
+                  Sign In
+                </Link>
+              )}
             </div>
           )}
         </div>
