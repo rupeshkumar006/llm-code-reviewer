@@ -64,7 +64,7 @@ export default function Navbar({ remainingReviews }) {
     >
       <div className="max-w-screen-2xl mx-auto h-full flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
+        <Link to="/" onClick={() => setShowMobileMenu(false)} className="flex items-center gap-3 group">
           <div className="relative">
             <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center shadow-glow-sm group-hover:shadow-glow-primary transition-all duration-500 group-hover:scale-110">
               <Code2 size={22} className="text-white" />
@@ -150,7 +150,7 @@ export default function Navbar({ remainingReviews }) {
                       onClick={handleLogout}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold rounded-xl text-red-500 hover:bg-red-500/5 transition-colors group"
                     >
-                      <LogOut size={16} className="group-hover:-translate-x-0.5 transition-transform" /> Sign Out
+                      <LogOut size={16} className="group-hover:-translate-x-0.5 transition-transform" /> <span className="hover-underline-expand">Sign Out</span>
                     </button>
                   </div>
                 </>
@@ -162,7 +162,7 @@ export default function Navbar({ remainingReviews }) {
                 <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
                 Guest
               </div>
-              <Link to="/login" className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] hover:text-orange-500 transition-colors shrink-0">
+              <Link to="/login" className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] hover:text-orange-500 hover-underline-expand transition-colors shrink-0">
                 Sign In
               </Link>
             </div>
@@ -180,6 +180,69 @@ export default function Navbar({ remainingReviews }) {
       {/* Mobile Menu Overlay */}
       {showMobileMenu && (
         <div className="absolute top-16 left-0 w-full bg-[var(--bg-primary)] border-b border-[var(--border)] p-4 flex flex-col gap-4 shadow-2xl z-[100] sm:hidden animate-slide-down">
+          {/* User Info Card inside Mobile Menu */}
+          <div className="flex flex-col gap-2.5 p-3.5 rounded-xl border border-[var(--border)] bg-[var(--bg-surface-2)]">
+            <div className="flex items-center gap-3">
+              {isAuthenticated ? (
+                <>
+                  {user?.profilePicture ? (
+                    <img src={user.profilePicture} alt="" className="w-10 h-10 rounded-full border border-[var(--border)]" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-black shadow-glow-sm">
+                      {user?.displayName?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-[var(--text-primary)] text-sm truncate">{user?.displayName}</p>
+                    <p className="text-[11px] text-[var(--text-muted)] truncate">{user?.email}</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-10 h-10 rounded-full bg-[var(--bg-surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
+                    <User size={20} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-[var(--text-primary)] text-sm">Guest Mode</p>
+                    <p className="text-[11px] text-[var(--text-muted)] font-light">Sign in to save progress</p>
+                  </div>
+                </>
+              )}
+            </div>
+            
+            <div className="h-px bg-[var(--border)] my-1" />
+            
+            <div className="flex items-center justify-between text-xs font-medium text-[var(--text-secondary)]">
+              <span>Account Type</span>
+              {isAuthenticated ? (
+                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                  isPro 
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white' 
+                    : 'bg-[var(--bg-surface-3)] border border-[var(--border)] text-[var(--text-primary)]'
+                }`}>
+                  {isPro ? 'PRO' : 'FREE'}
+                </span>
+              ) : (
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-500/10 border border-orange-500/20 text-orange-500">
+                  GUEST
+                </span>
+              )}
+            </div>
+
+            {isAuthenticated && remainingReviews !== undefined && (
+              <div className="flex items-center justify-between text-xs font-medium text-[var(--text-secondary)]">
+                <span>AI Reviews</span>
+                <span className="font-bold">
+                  {remainingReviews === -1 ? (
+                    <span className="text-green-500">Unlimited</span>
+                  ) : (
+                    <><span className="text-orange-500">{remainingReviews}</span> Left</>
+                  )}
+                </span>
+              </div>
+            )}
+          </div>
+
           {isAuthenticated ? (
             <>
               <Link 

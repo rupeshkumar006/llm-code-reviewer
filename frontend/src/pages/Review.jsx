@@ -368,8 +368,14 @@ export default function Review() {
               <ExportButton 
                 reviewId={review?.id} 
                 code={review?.refactoredCode} 
-                disabled={!user}
-                tooltip={!user ? "Sign in to export reviews" : undefined}
+                disabled={!user || !review?.id}
+                tooltip={
+                  !user 
+                    ? "Sign in to export reviews" 
+                    : !review?.id 
+                      ? "Run a review to export" 
+                      : undefined
+                }
               />
             </div>
 
