@@ -27,5 +27,5 @@ COPY --from=builder /app/dist .
 # Nginx config for React SPA routing + API proxy
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
-CMD ["/bin/sh", "-c", "envsubst '${PORT}' < /etc/nginx/conf.d/default.conf > /tmp/default.conf && mv /tmp/default.conf /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+EXPOSE 3000
+CMD ["nginx", "-g", "daemon off;"]
