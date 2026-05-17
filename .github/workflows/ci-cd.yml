@@ -1,0 +1,138 @@
+name: CI — Build & Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─── Backend: Compile + Test ──────────────────────────────────────────────
+  backend-test:
+    name: Backend (Java 17 / Maven)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run Maven compile
+        working-directory: ./backend
+        run: mvn clean compile -B
+        env:
+          DB_HOST: localhost
+          DB_PORT: 3306
+          DB_NAME: code_reviewer_test
+          DB_USER: test
+          DB_PASS: testpassword
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          JWT_SECRET: test_jwt_secret_key_at_least_256_bits_long_for_testing_purposes
+          GEMINI_API_KEY: placeholder
+          GOOGLE_CLIENT_ID: placeholder
+          GOOGLE_CLIENT_SECRET: placeholder
+
+      - name: Run unit tests (H2 in-memory)
+        working-directory: ./backend
+        run: mvn test -B
+        env:
+          JWT_SECRET: test_jwt_secret_key_at_least_256_bits_long_for_testing_purposes
+          GEMINI_API_KEY: placeholder
+          GOOGLE_CLIENT_ID: placeholder
+          GOOGLE_CLIENT_SECRET: placeholder
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-report
+          path: backend/target/surefire-reports/
+
+  # ─── Frontend: Lint + Build ───────────────────────────────────────────────
+  frontend-build:
+    name: Frontend (Node 20 / Vite)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: ./frontend
+        run: npx eslint src --ext .js,.jsx --max-warnings 50
+        continue-on-error: true  # lint warnings don't fail the build
+
+      - name: Build production bundle
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          VITE_API_URL: http://localhost:8080/api
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+          retention-days: 7
+
+  # ─── Docker Build (main branch only) ─────────────────────────────────────
+  docker-build:
+    name: Docker Build Validation
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-build]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: code-reviewer-backend:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: false
+          tags: code-reviewer-frontend:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Validate docker-compose config
+        run: docker compose config
+        env:
+          DB_PASS: testpassword
+          DB_USER: test
+          DB_NAME: code_reviewer
+          JWT_SECRET: test_secret_key_minimum_32_characters_long_here
+          GEMINI_API_KEY: placeholder
+          GOOGLE_CLIENT_ID: placeholder
+          GOOGLE_CLIENT_SECRET: placeholder
+          VITE_API_URL: http://localhost:8080/api

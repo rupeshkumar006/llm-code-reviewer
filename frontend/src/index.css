@@ -1,0 +1,369 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* LIGHT MODE (Default) */
+  --bg-primary: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-2: #f1f5f9;
+  --bg-surface-3: #e2e8f0;
+  
+  /* Borders */
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  
+  /* Accents (Common) */
+  --accent-primary: #f97316;      /* orange — primary CTA */
+  --accent-primary-hover: #ea6c0a;
+  --accent-secondary: #0891b2;    /* cyan — adjusted for light mode */
+  --accent-purple: #8b5cf6;       /* purple */
+  --accent-green: #16a34a;        /* green */
+  --accent-red: #dc2626;          /* red */
+  --accent-yellow: #ca8a04;       /* yellow */
+  
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --text-code: #0891b2;
+
+  /* Login/Register Specific (Light Mode) */
+  --login-left-bg: #1e2028;
+  --login-right-bg: #f9fafb;
+  --login-mobile-bg: #f3f4f6;
+  --login-form-bg: #ffffff;
+  --login-input-bg: #f9fafb;
+  --login-input-border: #d1d5db;
+  --login-input-text: #111827;
+  --login-input-placeholder: #9ca3af;
+  --login-label: #374151;
+  --login-heading: #111827;
+  --login-subtext: #6b7280;
+  --login-divider: #e5e7eb;
+
+  /* Heatmap Colors */
+  --heatmap-bg-0: #e2e8f0;
+  --heatmap-bg-1: #fed7aa;
+  --heatmap-bg-2: #fb923c;
+  --heatmap-bg-3: #f97316;
+}
+
+.dark {
+  /* DARK MODE */
+  --bg-primary: #0a0a0a;
+  --bg-surface: #141414;
+  --bg-surface-2: #1e1e1e;
+  --bg-surface-3: #2a2a2a;
+  
+  /* Borders */
+  --border: #2a2a2a;
+  --border-subtle: #1f1f1f;
+  
+  /* Accents (Darker optimized) */
+  --accent-secondary: #22d3ee;
+  --accent-purple: #a78bfa;
+  --accent-green: #22c55e;
+  --accent-red: #ef4444;
+  --accent-yellow: #eab308;
+  
+  /* Text */
+  --text-primary: #e5e5e5;
+  --text-secondary: #a3a3a3;
+  --text-muted: #6b7280;
+  --text-code: #22d3ee;
+
+  /* Login/Register Specific (Dark Mode Overrides) */
+  --login-left-bg: #0a0a0a;
+  --login-right-bg: #0a0a0a;
+  --login-mobile-bg: #0a0a0a;
+  --login-form-bg: #141414;
+  --login-input-bg: #0d0d0d;
+  --login-input-border: #2a2a2a;
+  --login-input-text: #ffffff;
+  --login-input-placeholder: #4b5563;
+  --login-label: #a3a3a3;
+  --login-heading: #ffffff;
+  --login-subtext: #a3a3a3;
+  --login-divider: #2a2a2a;
+
+  /* Heatmap Colors */
+  --heatmap-bg-0: #1a1a1a;
+  --heatmap-bg-1: #7c2d12;
+  --heatmap-bg-2: #c2410c;
+  --heatmap-bg-3: #ea580c;
+}
+
+@layer base {
+  html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    background-color: var(--bg-primary);
+    background-image: radial-gradient(circle, var(--text-muted) 0.5px, transparent 0.5px);
+    background-size: 28px 28px;
+    color: var(--text-primary);
+    @apply selection:bg-orange-500/30 transition-colors duration-300;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+}
+
+@layer components {
+  /* Premium Glassmorphism */
+  .glass-panel {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border);
+    @apply backdrop-blur-2xl rounded-2xl shadow-2xl;
+  }
+
+  .glass-panel-solid {
+    background-color: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    @apply rounded-2xl shadow-2xl;
+  }
+
+  .glass-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border);
+    @apply backdrop-blur-lg rounded-3xl p-8 hover:border-orange-500/30 transition-all duration-500;
+  }
+
+  /* Premium Buttons */
+  .btn-primary {
+    @apply relative overflow-hidden px-8 py-3 rounded-xl font-bold text-white
+           hover:scale-[1.02] active:scale-[0.98]
+           transition-all duration-300 ease-out;
+    background-color: var(--accent-primary);
+  }
+  .btn-primary:hover {
+    background-color: var(--accent-primary-hover);
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 rounded-xl font-semibold
+           transition-all duration-300;
+    color: var(--text-primary);
+    background-color: var(--bg-surface-2);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover {
+    background-color: var(--bg-surface-3);
+    border-color: var(--accent-primary);
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 rounded-lg font-medium
+           transition-all duration-300;
+    color: var(--text-muted);
+  }
+  .btn-ghost:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-surface-2);
+  }
+
+  /* Animated Text — indigo-to-cyan gradient */
+  .text-gradient-premium {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-primary-400 to-cyan-400 animate-gradient-text bg-[length:200%_auto];
+  }
+
+  /* Shimmer gradient text with animated shine effect */
+  .text-gradient-shimmer {
+    background: linear-gradient(
+      90deg,
+      #818cf8 0%,
+      #6366f1 20%,
+      #06b6d4 40%,
+      #22d3ee 50%,
+      #06b6d4 60%,
+      #6366f1 80%,
+      #818cf8 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer-text 4s linear infinite;
+  }
+
+  /* Badges */
+  .badge-severity {
+    @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border;
+  }
+
+  /* Universal card hover state */
+  .card-hover {
+    transition: border-color 0.2s ease, transform 0.15s ease;
+  }
+  .card-hover:hover {
+    border-color: rgba(249, 115, 22, 0.4);
+    transform: translateY(-1px);
+  }
+}
+
+@layer utilities {
+  .bg-gradient-premium {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 0%, var(--accent-primary) 0%, transparent 50%);
+    opacity: 0.03;
+  }
+  .dark .bg-gradient-premium {
+    opacity: 0.15;
+  }
+
+  /* Dot grid background texture */
+  .bg-dot-grid {
+    background-image: radial-gradient(circle, #ffffff08 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .shadow-glow-primary {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+  }
+
+  .shadow-glow-sm {
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
+  }
+}
+
+/* Animations */
+@keyframes rotate-bg {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes gradient-text {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes shimmer-text {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-gradient-text {
+  animation: gradient-text 3s linear infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(249, 115, 22, 0.4); }
+  50% { opacity: 0.8; box-shadow: 0 0 40px rgba(249, 115, 22, 0.6); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slide-in-left {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slide-out-right {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+  @keyframes slide-out-left {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100%); opacity: 0; }
+  }
+
+  @keyframes zoom-in {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .animate-zoom-in { animation: zoom-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+  .animate-slide-in-right { animation: slide-in-right 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+  .animate-slide-in-left { animation: slide-in-left 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+  .animate-slide-out-right { animation: slide-out-right 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+  .animate-slide-out-left { animation: slide-out-left 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Monaco Decorations */
+.monaco-line-bug-critical { background: rgba(239, 68, 68, 0.15) !important; }
+.monaco-line-bug-high { background: rgba(249, 115, 22, 0.15) !important; }
+.monaco-line-bug-medium { background: rgba(245, 158, 11, 0.15) !important; }
+.monaco-line-bug-low { background: rgba(107, 114, 128, 0.15) !important; }
+.monaco-line-security { background: rgba(99, 102, 241, 0.15) !important; }
+
+.monaco-glyph-bug-critical { background: #ef4444 !important; border-radius: 50%; width: 8px !important; height: 8px !important; margin-left: 4px; margin-top: 4px; }
+.monaco-glyph-bug-high { background: #f97316 !important; border-radius: 50%; width: 8px !important; height: 8px !important; margin-left: 4px; margin-top: 4px; }
+.monaco-glyph-bug-medium { background: #f59e0b !important; border-radius: 50%; width: 8px !important; height: 8px !important; margin-left: 4px; margin-top: 4px; }
+.monaco-glyph-bug-low { background: #6b7280 !important; border-radius: 50%; width: 8px !important; height: 8px !important; margin-left: 4px; margin-top: 4px; }
+.monaco-glyph-security { background: #6366f1 !important; border-radius: 50%; width: 8px !important; height: 8px !important; margin-left: 4px; margin-top: 4px; }
+
+/* Scroll hint fade-out animation */
+@keyframes scroll-hint-fade {
+  0% { opacity: 0.8; }
+  70% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+.animate-scroll-hint {
+  animation: scroll-hint-fade 3s ease-out forwards;
+}

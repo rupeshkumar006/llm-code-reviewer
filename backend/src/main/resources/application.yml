@@ -1,0 +1,49 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: code-reviewer
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:code_reviewer}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PASS:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      repositories:
+        enabled: false   # We use Redis directly via RedisTemplate, not Spring Data repos
+
+
+
+  servlet:
+    multipart:
+      max-file-size: 50KB
+      max-request-size: 50KB
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:veryLongSecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLongForHS256Algorithm2024}
+    access-token-expiration: 900000      # 15 minutes
+    refresh-token-expiration: 604800000  # 7 days
+
+  gemini:
+    api-key: ${GEMINI_API_KEY:placeholder}
+    model: ${GEMINI_MODEL:gemini-2.5-flash}
+    max-tokens: 16384
+
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000}
+
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:5173}

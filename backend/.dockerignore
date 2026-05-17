@@ -1,0 +1,4 @@
+*.md
+.mvn/
+mvnw
+mvnw.cmd
