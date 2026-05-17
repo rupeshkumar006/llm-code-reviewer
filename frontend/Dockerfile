@@ -21,7 +21,8 @@ WORKDIR /usr/share/nginx/html
 
 # Remove default nginx content
 RUN rm -rf ./*
-
+# Remove the script that overrides our port config
+RUN rm /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
 COPY --from=builder /app/dist .
 
 # Nginx config for React SPA routing + API proxy
