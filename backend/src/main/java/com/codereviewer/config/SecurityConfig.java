@@ -64,6 +64,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/share/**").permitAll()
                 .requestMatchers("/api/review", "/api/review/stream").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
             )

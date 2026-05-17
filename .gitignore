@@ -31,3 +31,10 @@ Thumbs.db
 # ── Misc ─────────────────────────────────────────────────────────────────────
 *.tmp
 *.bak
+
+# ── Deployment & Builds ──────────────────────────────────────────────────────
+target/
+node_modules/
+dist/
+docker-compose.override.yml
+
