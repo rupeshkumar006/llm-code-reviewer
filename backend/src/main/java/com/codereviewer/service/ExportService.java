@@ -84,10 +84,10 @@ public class ExportService {
 
             // Fonts
             Font titleFont = new Font(Font.HELVETICA, 20, Font.BOLD, ACCENT_COLOR);
-            Font sectionFont = new Font(Font.HELVETICA, 14, Font.BOLD, PRIMARY_COLOR);
-            Font bodyFont = new Font(Font.HELVETICA, 10, Font.NORMAL, Color.DARK_GRAY);
+            Font sectionFont = new Font(Font.HELVETICA, 13, Font.BOLD, PRIMARY_COLOR);
+            Font bodyFont = new Font(Font.HELVETICA, 9.5f, Font.NORMAL, Color.DARK_GRAY);
             Font labelFont = new Font(Font.HELVETICA, 9, Font.BOLD, Color.GRAY);
-            Font codeFont = new Font(Font.COURIER, 11, Font.NORMAL, new Color(31, 41, 55));
+            Font codeFont = new Font(Font.COURIER, 9.5f, Font.NORMAL, new Color(31, 41, 55));
 
             // Format date
             String dateStr = review.getCreatedAt() != null
@@ -99,40 +99,26 @@ public class ExportService {
                     : "Unknown";
 
             // ═══════════════════════════════════════════
-            // TITLE
+            // HEADER BANNER (VISUAL)
             // ═══════════════════════════════════════════
-            Paragraph title = new Paragraph(
-                    "Code Review Report — " + langDisplay + " — " + dateStr, titleFont);
-            title.setAlignment(Element.ALIGN_CENTER);
-            title.setSpacingAfter(20);
-            document.add(title);
+            PdfPTable headerTable = new PdfPTable(1);
+            headerTable.setWidthPercentage(100);
+            headerTable.setSpacingAfter(15);
 
-            addDivider(document);
+            PdfPCell bannerCell = new PdfPCell();
+            bannerCell.setBackgroundColor(new Color(15, 23, 42)); // Slate-900
+            bannerCell.setPadding(18);
+            bannerCell.setBorder(Rectangle.NO_BORDER);
 
-            // ═══════════════════════════════════════════
-            // SECTION 1: EXECUTIVE SUMMARY
-            // ═══════════════════════════════════════════
-            Paragraph summaryTitle = new Paragraph("1. Executive Summary", sectionFont);
-            summaryTitle.setSpacingBefore(10);
-            summaryTitle.setSpacingAfter(10);
-            document.add(summaryTitle);
+            Paragraph brand = new Paragraph("CODEREVIEWER  //  DEVELOPER REPORT", new Font(Font.HELVETICA, 8, Font.BOLD, new Color(96, 165, 250)));
+            brand.setSpacingAfter(4);
+            bannerCell.addElement(brand);
 
-            String summaryText = response.getSummary() != null ? response.getSummary() : "No summary provided.";
-            Paragraph summaryPara = new Paragraph(summaryText, bodyFont);
-            summaryPara.setSpacingAfter(10);
-            document.add(summaryPara);
+            Paragraph reportTitle = new Paragraph("Code Review Audit: " + langDisplay, new Font(Font.HELVETICA, 18, Font.BOLD, Color.WHITE));
+            reportTitle.setSpacingAfter(8);
+            bannerCell.addElement(reportTitle);
 
-            addDivider(document);
-
-            // ═══════════════════════════════════════════
-            // SECTION 2: QUALITY SCORE
-            // ═══════════════════════════════════════════
-            Paragraph scoreTitle = new Paragraph("2. Quality Score", sectionFont);
-            scoreTitle.setSpacingBefore(10);
-            scoreTitle.setSpacingAfter(10);
-            document.add(scoreTitle);
-
-            // Score + Grade
+            // Score details
             int score = response.getScore() != null ? response.getScore() : 0;
             String grade;
             Color gradeColor;
@@ -141,25 +127,61 @@ public class ExportService {
             else if (score >= 40) { grade = "POOR"; gradeColor = WARNING_COLOR; }
             else { grade = "CRITICAL"; gradeColor = DANGER_COLOR; }
 
-            // Summary box with background
-            PdfPTable summaryBox = new PdfPTable(1);
-            summaryBox.setWidthPercentage(100);
+            Paragraph meta = new Paragraph("Generated on " + dateStr + "  |  Overall Score: " + score + "/100 (" + grade + ")", new Font(Font.HELVETICA, 9, Font.NORMAL, new Color(203, 213, 225)));
+            bannerCell.addElement(meta);
 
-            // Score line
-            Font scoreFont = new Font(Font.HELVETICA, 28, Font.BOLD, gradeColor);
-            Font gradeFont = new Font(Font.HELVETICA, 12, Font.BOLD, gradeColor);
-            Phrase scorePhrase = new Phrase();
-            scorePhrase.add(new Chunk(String.valueOf(score) + " / 100", scoreFont));
-            scorePhrase.add(new Chunk("   " + grade, gradeFont));
+            headerTable.addCell(bannerCell);
+            document.add(headerTable);
 
-            PdfPCell scoreCell = new PdfPCell(scorePhrase);
-            scoreCell.setPadding(12);
-            scoreCell.setBorderWidth(0);
-            scoreCell.setBackgroundColor(LIGHT_BG);
-            summaryBox.addCell(scoreCell);
+            // ═══════════════════════════════════════════
+            // SECTION 1: EXECUTIVE SUMMARY & DASHBOARD
+            // ═══════════════════════════════════════════
+            Paragraph summaryTitle = new Paragraph("1. Executive Summary", sectionFont);
+            summaryTitle.setSpacingBefore(5);
+            summaryTitle.setSpacingAfter(8);
+            document.add(summaryTitle);
 
-            document.add(summaryBox);
-            document.add(new Paragraph(" "));
+            String summaryText = response.getSummary() != null ? response.getSummary() : "No summary provided.";
+            Paragraph summaryPara = new Paragraph(summaryText, bodyFont);
+            summaryPara.setSpacingAfter(15);
+            document.add(summaryPara);
+
+            // KPI Grid Cards
+            int bugCount = response.getBugs() != null ? response.getBugs().size() : 0;
+            int securityCount = response.getSecurity() != null ? response.getSecurity().size() : 0;
+            int bpCount = response.getBestPractices() != null ? response.getBestPractices().size() : 0;
+
+            PdfPTable statsGrid = new PdfPTable(4);
+            statsGrid.setWidthPercentage(100);
+            statsGrid.setWidths(new float[]{1f, 1f, 1f, 1f});
+            statsGrid.setSpacingAfter(10);
+
+            statsGrid.addCell(createMetricCard(score + "%", "QUALITY SCORE", gradeColor));
+            statsGrid.addCell(createMetricCard(String.valueOf(bugCount), "LOGIC BUGS", bugCount > 0 ? DANGER_COLOR : SUCCESS_COLOR));
+            statsGrid.addCell(createMetricCard(String.valueOf(securityCount), "SECURITY ALERTS", securityCount > 0 ? DANGER_COLOR : SUCCESS_COLOR));
+            statsGrid.addCell(createMetricCard(String.valueOf(bpCount), "BEST PRACTICES", bpCount > 0 ? WARNING_COLOR : SUCCESS_COLOR));
+
+            document.add(statsGrid);
+
+            // Horizontal Score Progress Bar
+            PdfPTable progressBar = new PdfPTable(2);
+            progressBar.setWidthPercentage(100);
+            progressBar.setWidths(new float[]{Math.max(score, 1), Math.max(100 - score, 1)});
+            progressBar.setSpacingAfter(15);
+
+            PdfPCell filledPart = new PdfPCell();
+            filledPart.setBackgroundColor(gradeColor);
+            filledPart.setFixedHeight(6f);
+            filledPart.setBorder(Rectangle.NO_BORDER);
+            progressBar.addCell(filledPart);
+
+            PdfPCell unfilledPart = new PdfPCell();
+            unfilledPart.setBackgroundColor(new Color(226, 232, 240)); // Slate-200
+            unfilledPart.setFixedHeight(6f);
+            unfilledPart.setBorder(Rectangle.NO_BORDER);
+            progressBar.addCell(unfilledPart);
+
+            document.add(progressBar);
 
             // Collect bug descriptions for deduplication
             Set<String> bugDescriptions = new HashSet<>();
@@ -172,18 +194,18 @@ public class ExportService {
             }
 
             // ═══════════════════════════════════════════
-            // SECTION 3: BUGS & VULNERABILITIES
+            // SECTION 2: BUGS & VULNERABILITIES
             // ═══════════════════════════════════════════
             if (response.getBugs() != null && !response.getBugs().isEmpty()) {
                 addDivider(document);
-                Paragraph bugsTitle = new Paragraph("3. Bugs & Vulnerabilities (" + response.getBugs().size() + ")", sectionFont);
+                Paragraph bugsTitle = new Paragraph("2. Bugs & Logic Errors (" + response.getBugs().size() + ")", sectionFont);
                 bugsTitle.setSpacingBefore(10);
                 bugsTitle.setSpacingAfter(8);
                 document.add(bugsTitle);
 
                 PdfPTable bugsTable = new PdfPTable(5);
                 bugsTable.setWidthPercentage(100);
-                bugsTable.setWidths(new float[]{0.6f, 0.8f, 1.5f, 3f, 3f});
+                bugsTable.setWidths(new float[]{0.6f, 0.8f, 1.3f, 3.1f, 3.1f});
 
                 addTableHeader(bugsTable, "No.");
                 addTableHeader(bugsTable, "Line");
@@ -206,10 +228,9 @@ public class ExportService {
             }
 
             // ═══════════════════════════════════════════
-            // SECTION 4: SECURITY ANALYSIS (deduplicated)
+            // SECTION 3: SECURITY ANALYSIS (deduplicated)
             // ═══════════════════════════════════════════
             if (response.getSecurity() != null && !response.getSecurity().isEmpty()) {
-                // Filter out security issues that duplicate bug descriptions
                 java.util.List<ReviewResponse.SecurityIssue> dedupedSecurity = response.getSecurity().stream()
                         .filter(issue -> {
                             String desc = issue.getDescription() != null ? issue.getDescription().toLowerCase().trim() : "";
@@ -219,7 +240,7 @@ public class ExportService {
 
                 if (!dedupedSecurity.isEmpty()) {
                     addDivider(document);
-                    Paragraph secTitle = new Paragraph("4. Security Analysis (" + dedupedSecurity.size() + ")", sectionFont);
+                    Paragraph secTitle = new Paragraph("3. Security Analysis (" + dedupedSecurity.size() + ")", sectionFont);
                     secTitle.setSpacingBefore(10);
                     secTitle.setSpacingAfter(8);
                     document.add(secTitle);
@@ -252,16 +273,15 @@ public class ExportService {
             }
 
             // ═══════════════════════════════════════════
-            // SECTION 5: BEST PRACTICES (numbered list)
+            // SECTION 4: BEST PRACTICES
             // ═══════════════════════════════════════════
             if (response.getBestPractices() != null && !response.getBestPractices().isEmpty()) {
                 addDivider(document);
-                Paragraph bpTitle = new Paragraph("5. Best Practice Recommendations", sectionFont);
+                Paragraph bpTitle = new Paragraph("4. Best Practice Recommendations", sectionFont);
                 bpTitle.setSpacingBefore(10);
                 bpTitle.setSpacingAfter(8);
                 document.add(bpTitle);
 
-                // Numbered list instead of bullet points
                 int bpIndex = 1;
                 for (String bp : response.getBestPractices()) {
                     Paragraph bpItem = new Paragraph(bpIndex + ". " + bp, bodyFont);
@@ -274,30 +294,37 @@ public class ExportService {
             }
 
             // ═══════════════════════════════════════════
-            // SECTION 6: REFACTORED CODE
+            // SECTION 5: REFACTORED CODE (LINE NUMBERED)
             // ═══════════════════════════════════════════
             if (response.getRefactoredCode() != null && !response.getRefactoredCode().isBlank()) {
                 addDivider(document);
-                Paragraph codeTitle = new Paragraph("6. Refactored Code", sectionFont);
+                Paragraph codeTitle = new Paragraph("5. Refactored Code", sectionFont);
                 codeTitle.setSpacingBefore(10);
                 codeTitle.setSpacingAfter(4);
                 document.add(codeTitle);
 
-                // Language label
                 Paragraph langLabel = new Paragraph("Language: " + langDisplay, labelFont);
                 langLabel.setSpacingAfter(6);
                 document.add(langLabel);
 
-                // Code block in monospace
+                // Monospace formatting with line numbers
+                String[] lines = response.getRefactoredCode().split("\r?\n");
+                StringBuilder formattedCode = new StringBuilder();
+                for (int i = 0; i < lines.length; i++) {
+                    formattedCode.append(String.format("%3d |  %s\n", i + 1, lines[i]));
+                }
+
                 PdfPTable codeBox = new PdfPTable(1);
                 codeBox.setWidthPercentage(100);
 
-                PdfPCell codeCell = new PdfPCell(new Phrase(response.getRefactoredCode(), codeFont));
-                codeCell.setPadding(16);
-                codeCell.setBorderWidth(0);
-                codeCell.setBorderWidthLeft(3f);
-                codeCell.setBorderColorLeft(new Color(249, 115, 22));
-                codeCell.setBackgroundColor(new Color(243, 244, 246));
+                PdfPCell codeCell = new PdfPCell(new Phrase(formattedCode.toString(), codeFont));
+                codeCell.setPadding(12);
+                codeCell.setBorder(Rectangle.BOX);
+                codeCell.setBorderWidth(1f);
+                codeCell.setBorderColor(new Color(226, 232, 240));
+                codeCell.setBorderWidthLeft(4f);
+                codeCell.setBorderColorLeft(new Color(249, 115, 22)); // Orange accent bar
+                codeCell.setBackgroundColor(new Color(248, 250, 252)); // Slate-50
                 codeBox.addCell(codeCell);
                 document.add(codeBox);
             }
@@ -307,10 +334,9 @@ public class ExportService {
             // ═══════════════════════════════════════════
             addDivider(document);
             Font footerFont = new Font(Font.HELVETICA, 8, Font.ITALIC, Color.GRAY);
-            Paragraph footer = new Paragraph(
-                    "Generated by CodeReviewer on " + dateStr, footerFont);
+            Paragraph footer = new Paragraph("Generated by CodeReviewer on " + dateStr, footerFont);
             footer.setAlignment(Element.ALIGN_CENTER);
-            footer.setSpacingBefore(20);
+            footer.setSpacingBefore(15);
             document.add(footer);
 
             document.close();
@@ -362,7 +388,7 @@ public class ExportService {
 
     private void addDivider(Document document) throws DocumentException {
         Paragraph gap = new Paragraph(" ");
-        gap.setSpacingBefore(20);
+        gap.setSpacingBefore(15);
         gap.setSpacingAfter(0);
         document.add(gap);
         
@@ -374,17 +400,16 @@ public class ExportService {
 
     private void addTableHeader(PdfPTable table, String text) {
         PdfPCell cell = new PdfPCell(new Phrase(text,
-                new Font(Font.HELVETICA, 9, Font.BOLD, Color.WHITE)));
-        cell.setBackgroundColor(ACCENT_COLOR);
+                new Font(Font.HELVETICA, 8.5f, Font.BOLD, Color.WHITE)));
+        cell.setBackgroundColor(new Color(30, 41, 59)); // Slate-800 header
         cell.setPadding(6);
-        // Using clear/transparent borders (not SOLID) per blueprint instruction
         cell.setBorderWidth(0);
         table.addCell(cell);
     }
 
     private void addTableCell(PdfPTable table, String text, boolean isEven) {
         PdfPCell cell = new PdfPCell(new Phrase(text != null ? text : "",
-                new Font(Font.HELVETICA, 9, Font.NORMAL, Color.DARK_GRAY)));
+                new Font(Font.HELVETICA, 8.5f, Font.NORMAL, Color.DARK_GRAY)));
         cell.setPadding(5);
         cell.setBorderWidth(0);
         cell.setBackgroundColor(isEven ? new Color(249, 250, 251) : Color.WHITE);
@@ -392,18 +417,42 @@ public class ExportService {
     }
 
     private void addSeverityCell(PdfPTable table, String severity, boolean isEven) {
-        Color color = switch (severity != null ? severity.toLowerCase() : "") {
+        Color bgColor = switch (severity != null ? severity.toLowerCase() : "") {
             case "critical", "high" -> DANGER_COLOR;
             case "medium" -> WARNING_COLOR;
             case "low" -> SUCCESS_COLOR;
             default -> Color.GRAY;
         };
 
-        PdfPCell cell = new PdfPCell(new Phrase(severity != null ? severity : "N/A",
-                new Font(Font.HELVETICA, 9, Font.BOLD, color)));
+        PdfPCell cell = new PdfPCell(new Phrase(severity != null ? severity.toUpperCase() : "N/A",
+                new Font(Font.HELVETICA, 7.5f, Font.BOLD, Color.WHITE)));
         cell.setPadding(5);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cell.setBackgroundColor(bgColor);
         cell.setBorderWidth(0);
-        cell.setBackgroundColor(isEven ? new Color(249, 250, 251) : Color.WHITE);
         table.addCell(cell);
+    }
+
+    private PdfPCell createMetricCard(String value, String label, Color accentColor) {
+        PdfPCell cell = new PdfPCell();
+        cell.setBackgroundColor(new Color(248, 250, 252)); // Slate-50 background
+        cell.setPadding(8);
+        cell.setBorder(Rectangle.BOX);
+        cell.setBorderWidth(1f);
+        cell.setBorderColor(new Color(226, 232, 240)); // Slate-200 border
+        cell.setBorderWidthLeft(3f);
+        cell.setBorderColorLeft(accentColor);
+
+        Paragraph valPara = new Paragraph(value, new Font(Font.HELVETICA, 14, Font.BOLD, Color.DARK_GRAY));
+        valPara.setAlignment(Element.ALIGN_CENTER);
+        cell.addElement(valPara);
+
+        Paragraph lblPara = new Paragraph(label, new Font(Font.HELVETICA, 7, Font.BOLD, Color.GRAY));
+        lblPara.setAlignment(Element.ALIGN_CENTER);
+        lblPara.setSpacingBefore(3);
+        cell.addElement(lblPara);
+
+        return cell;
     }
 }
