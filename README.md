@@ -160,64 +160,15 @@
 
 ---
 
-## 🖼️ Screenshots & UI Tour
+## 🖼️ Screenshots
 
-### Landing & Authentication
-The landing page features an intuitive onboarding flow with hero messaging and multiple authentication options:
+![CodeReviewer Dashboard](https://github.com/rupeshkumar006/llm-code-reviewer/assets/screenshots/dashboard.png)
 
-![CodeReviewer Landing Page - Shows the main value proposition with Google OAuth and email signup options](image1.png)
+![CodeReviewer Code Review Interface](https://github.com/rupeshkumar006/llm-code-reviewer/assets/screenshots/review.png)
 
-**Key Elements:**
-- Clear value proposition: "Perfect your code with intelligence"
-- Highlight of 3 core features (AI-Powered Analysis, Security Detection, Best Practices)
-- Dual auth: Email/password login + Google OAuth
-- Code snippet example in background
+![CodeReviewer Landing Page](https://github.com/rupeshkumar006/llm-code-reviewer/assets/screenshots/landing.png)
 
-### Dashboard & Analytics
-The developer dashboard provides comprehensive metrics and historical trends:
-
-![CodeReviewer Dashboard - Displays real-time metrics including current streak, average quality score, most reviewed language, and workspace analytics](image2.png)
-
-**Metrics Displayed:**
-- **Current Streak**: 1 day active
-- **Average Quality Score**: 35%
-- **Most Reviewed Language**: JavaScript (1 review)
-- **Workspace Analytics** (Apr 20 – May 19):
-  - Average Quality: 35%
-  - Total Reviews: 1
-  - Bugs Detected: 6
-  - Security Grade: D
-- **Quality Evolution Chart**: 7-day, 30-day, and all-time views
-- **Language Distribution**: Multi-language breakdown
-
-### Code Review Interface
-The main review editor with multi-language support and real-time analysis:
-
-![CodeReviewer Review Page - Shows the code editor with language selector, code input area, and quality/security metrics panel](image3.png)
-
-**Features:**
-- **Language Selector**: Dropdown supporting 10+ languages (Java, Python, JavaScript, TypeScript, C++, Go, Rust, SQL, PHP, Ruby)
-- **Code Editor**: Monaco-powered editor with syntax highlighting
-- **Quick Actions**: 
-  - New Review button
-  - Load Example code
-  - Clear editor
-  - Upload file option
-  - Export & Review Code buttons
-- **Metrics Panel**: Real-time quality and security scoring
-- **History Sidebar**: Previously reviewed code with timestamps and language tags
-
-### Home Page - Hero Section
-The main CTA page when authenticated:
-
-![CodeReviewer Home - Shows "Ship Better Code With Confidence" headline with prominent Open Workspace CTA](image4.png)
-
-**Design Elements:**
-- Bold headline with orange accent color
-- Tagline emphasizing under 20 seconds delivery
-- Language support callout
-- "Open Workspace" CTA button
-- Tech stack display at bottom
+![CodeReviewer Home Page](https://github.com/rupeshkumar006/llm-code-reviewer/assets/screenshots/home.png)
 
 ---
 
@@ -249,7 +200,7 @@ llm-code-reviewer/
 │       ├── pages/                  # Home, Review, Dashboard, Login, Share, 404
 │       └── services/               # Axios client, SSE helpers, API interceptors
 ├── docker-compose.yml              # MySQL + Redis + Backend + Frontend orchestration
-├── project_details_report.md       # Complete technical specifications (this file)
+├── project_details_report.md       # Complete technical specifications
 └── README.md                       # This file
 
 **Code Statistics:**
