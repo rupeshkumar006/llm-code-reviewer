@@ -75,10 +75,10 @@ Spring Boot (Render)
 
 ## Screenshots
 
-![Sign In](Assests/Screenshots/Signin.png)
-![Home](Assests/Screenshots/Home.png)
-![Review](Assests/Screenshots/Review.png)
-![Analytics](Assests/Screenshots/Analytics.png)
+![Sign In](Assets/Screenshots/Signin.png)
+![Home](Assets/Screenshots/Home.png)
+![Review](Assets/Screenshots/Review.png)
+![Analytics](Assets/Screenshots/Analytics.png)
 
 ---
 
