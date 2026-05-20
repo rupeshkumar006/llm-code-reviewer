@@ -1,7 +1,9 @@
 # CodeReviewer — AI-Powered Code Review Tool
 
 [![CI](https://github.com/rupeshkumar006/llm-code-reviewer/actions/workflows/ci.yml/badge.svg)](https://github.com/rupeshkumar006/llm-code-reviewer/actions/workflows/ci.yml)
+
 ![Java](https://img.shields.io/badge/Java-17-orange)
+
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.5-green)
 ![React](https://img.shields.io/badge/React-19-blue)
 ![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash-blue)
