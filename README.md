@@ -162,13 +162,13 @@
 
 ## 🖼️ Screenshots
 
-![CodeReviewer Analytics Dashboard](Assests/Screenshots/Analytics.png)
-
 ![CodeReviewer Sign In Page](Assests/Screenshots/Signin.png)
 
 ![CodeReviewer Home Page](Assests/Screenshots/Home.png)
 
 ![CodeReviewer Code Review Interface](Assests/Screenshots/Review.png)
+
+![CodeReviewer Analytics Dashboard](Assests/Screenshots/Analytics.png)
 
 ---
 
