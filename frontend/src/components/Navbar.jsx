@@ -101,7 +101,7 @@ export default function Navbar({ remainingReviews }) {
         {/* Right Section */}
         <div className="flex items-center gap-2 sm:gap-4 h-full">
           {/* Review Counter */}
-          {isAuthenticated && remainingReviews !== undefined && (
+          {remainingReviews !== undefined && (
             <div 
               className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-surface-2)] text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]"
               title={`You have ${remainingReviews === -1 ? 'unlimited' : remainingReviews} AI reviews remaining`}
@@ -248,7 +248,7 @@ export default function Navbar({ remainingReviews }) {
               )}
             </div>
 
-            {isAuthenticated && remainingReviews !== undefined && (
+            {remainingReviews !== undefined && (
               <div className="flex items-center justify-between text-xs font-medium text-[var(--text-secondary)]">
                 <span>AI Reviews</span>
                 <span className="font-bold">

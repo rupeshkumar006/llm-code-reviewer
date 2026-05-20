@@ -119,6 +119,7 @@ public class AIService {
         Map<String, Object> generationConfig = new LinkedHashMap<>();
         generationConfig.put("maxOutputTokens", maxTokens);
         generationConfig.put("temperature", 0.2);
+        generationConfig.put("responseMimeType", "application/json");
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("contents", List.of(content));
@@ -134,12 +135,14 @@ public class AIService {
         List<String> modelsToTry = new ArrayList<>();
         modelsToTry.add(this.model);
         
-        // If the configured model is gemini-2.5-flash, add gemini-1.5-flash as a fallback.
-        if ("gemini-2.5-flash".equals(this.model)) {
-            modelsToTry.add("gemini-1.5-flash");
-        } else if (!"gemini-1.5-flash".equals(this.model)) {
-            // Also add gemini-1.5-flash as a general fallback if another custom model was chosen
-            modelsToTry.add("gemini-1.5-flash");
+        // Add gemini-2.5-flash-lite as the first fallback
+        if (!"gemini-2.5-flash-lite".equals(this.model)) {
+            modelsToTry.add("gemini-2.5-flash-lite");
+        }
+        
+        // Add gemini-flash-latest as the second fallback
+        if (!"gemini-flash-latest".equals(this.model)) {
+            modelsToTry.add("gemini-flash-latest");
         }
 
         Exception lastException = null;
@@ -166,6 +169,18 @@ public class AIService {
                             e.getMessage().contains("SAFETY")
                        )) {
                         throw e;
+                    }
+
+                    // If it's a model-specific issue (404 Not Found, 429 Rate Limit/Quota, 503 Service Unavailable),
+                    // retrying this same model immediately won't help. Skip retries and proceed to the next fallback.
+                    if (e.getMessage() != null && (
+                            e.getMessage().contains("HTTP 404") || 
+                            e.getMessage().contains("HTTP 429") ||
+                            e.getMessage().contains("HTTP 503")
+                       )) {
+                        log.warn("Model-specific issue encountered ({}). Skipping remaining retries for {} and trying next fallback.", 
+                                 e.getMessage(), targetModel);
+                        break;
                     }
 
                     if (attempt < maxAttempts) {

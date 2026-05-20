@@ -43,6 +43,10 @@ function AppLayout({ children }) {
       reviewAPI.getRemaining()
         .then(res => setRemaining(res.data.remaining))
         .catch(() => {});
+    } else {
+      // For guest users, get remaining reviews from sessionStorage (default 5 free reviews)
+      const guestReviewsUsed = parseInt(sessionStorage.getItem('guestReviews') || '0', 10);
+      setRemaining(Math.max(0, 5 - guestReviewsUsed));
     }
 
     const handleUpdate = (e) => {

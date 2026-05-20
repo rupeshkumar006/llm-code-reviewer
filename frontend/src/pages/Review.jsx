@@ -133,6 +133,9 @@ export default function Review() {
     document.title = "Review · CodeReviewer";
     if (user) {
       fetchRemaining();
+    } else {
+      const guestReviewsUsed = parseInt(sessionStorage.getItem('guestReviews') || '0', 10);
+      setRemainingReviews(Math.max(0, 5 - guestReviewsUsed));
     }
 
     // Guest first visit check
@@ -152,8 +155,12 @@ export default function Review() {
   }, [code]);
 
   const handleReview = async () => {
-    if (user && remainingReviews === 0) {
-      toast.error('You have 0 reviews remaining. Please upgrade to continue.');
+    if (remainingReviews === 0) {
+      if (user) {
+        toast.error('You have 0 reviews remaining. Please upgrade to continue.');
+      } else {
+        toast.error('You have 0 free reviews remaining. Please sign in to continue.');
+      }
       return;
     }
 
@@ -176,6 +183,9 @@ export default function Review() {
       const newCount = guestCount + 1;
       setGuestCount(newCount);
       sessionStorage.setItem('guestReviews', newCount.toString());
+      const remaining = Math.max(0, 5 - newCount);
+      setRemainingReviews(remaining);
+      window.dispatchEvent(new CustomEvent('remaining-reviews-updated', { detail: remaining }));
     }
   };
 
@@ -382,12 +392,12 @@ export default function Review() {
             {/* Review button — takes remaining space on mobile */}
             <button
               onClick={handleReview}
-              disabled={isLoading || (user && remainingReviews === 0)}
-              title={user && remainingReviews === 0 ? 'Upgrade to continue' : undefined}
+              disabled={isLoading || remainingReviews === 0}
+              title={remainingReviews === 0 ? (user ? 'Upgrade to continue' : 'Sign in to continue') : undefined}
               className={`flex items-center gap-2 flex-1 sm:flex-initial min-w-0 sm:min-w-[140px] justify-center px-4 py-3 sm:py-2 rounded-xl font-bold text-white text-[13px] min-h-[44px] sm:min-h-0
                 bg-gradient-to-r from-primary-600 via-primary-500 to-accent-violet
                 hover:shadow-glow-primary transition-all duration-300 relative group
-                ${user && remainingReviews === 0 ? '!bg-none bg-red-950/20 text-red-500 border border-red-500/30 hover:scale-100' : ''}
+                ${remainingReviews === 0 ? '!bg-none bg-red-950/20 text-red-500 border border-red-500/30 hover:scale-100' : ''}
                 ${isLoading ? 'animate-pulse-glow opacity-90' : 'hover:scale-105 active:scale-95'}
               `}
             >
@@ -399,10 +409,10 @@ export default function Review() {
                   </svg>
                   {streaming ? 'Streaming...' : 'Analysing...'}
                 </>
-               ) : user && remainingReviews === 0 ? (
+               ) : remainingReviews === 0 ? (
                 <>
                   <HelpCircle size={14} />
-                  Locked (0 Left)
+                  {user ? 'Locked (0 Left)' : 'Locked (Sign In)'}
                 </>
               ) : (
                 <>
@@ -411,9 +421,9 @@ export default function Review() {
                 </>
               )}
 
-              {user && remainingReviews === 0 && (
+              {remainingReviews === 0 && (
                 <div className="absolute bottom-full mb-2 hidden group-hover:block bg-[var(--bg-surface)] border border-red-500/30 text-red-500 text-[10px] font-bold py-1 px-2 rounded-lg shadow-2xl whitespace-nowrap animate-slide-up z-50">
-                  Upgrade to continue
+                  {user ? 'Upgrade to continue' : 'Sign in to continue'}
                 </div>
               )}
             </button>
