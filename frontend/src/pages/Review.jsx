@@ -135,7 +135,7 @@ export default function Review() {
       fetchRemaining();
     } else {
       const guestReviewsUsed = parseInt(sessionStorage.getItem('guestReviews') || '0', 10);
-      setRemainingReviews(Math.max(0, 5 - guestReviewsUsed));
+      setRemainingReviews(Math.max(0, 10 - guestReviewsUsed));
     }
 
     // Guest first visit check
@@ -183,7 +183,7 @@ export default function Review() {
       const newCount = guestCount + 1;
       setGuestCount(newCount);
       sessionStorage.setItem('guestReviews', newCount.toString());
-      const remaining = Math.max(0, 5 - newCount);
+      const remaining = Math.max(0, 10 - newCount);
       setRemainingReviews(remaining);
       window.dispatchEvent(new CustomEvent('remaining-reviews-updated', { detail: remaining }));
     }
@@ -390,43 +390,44 @@ export default function Review() {
             </div>
 
             {/* Review button — takes remaining space on mobile */}
-            <button
-              onClick={handleReview}
-              disabled={isLoading || remainingReviews === 0}
-              title={remainingReviews === 0 ? (user ? 'Upgrade to continue' : 'Sign in to continue') : undefined}
-              className={`flex items-center gap-2 flex-1 sm:flex-initial min-w-0 sm:min-w-[140px] justify-center px-4 py-3 sm:py-2 rounded-xl font-bold text-white text-[13px] min-h-[44px] sm:min-h-0
-                bg-gradient-to-r from-primary-600 via-primary-500 to-accent-violet
-                hover:shadow-glow-primary transition-all duration-300 relative group
-                ${remainingReviews === 0 ? '!bg-none bg-red-950/20 text-red-500 border border-red-500/30 hover:scale-100' : ''}
-                ${isLoading ? 'animate-pulse-glow opacity-90' : 'hover:scale-105 active:scale-95'}
-              `}
-            >
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  {streaming ? 'Streaming...' : 'Analysing...'}
-                </>
-               ) : remainingReviews === 0 ? (
-                <>
-                  <HelpCircle size={14} />
-                  {user ? 'Locked (0 Left)' : 'Locked (Sign In)'}
-                </>
-              ) : (
-                <>
-                  <Play size={16} fill="currentColor" />
-                  Review Code
-                </>
-              )}
+            <div className="relative group flex-1 sm:flex-initial">
+              <button
+                onClick={handleReview}
+                disabled={isLoading || remainingReviews === 0}
+                className={`w-full flex items-center gap-2 min-w-0 sm:min-w-[140px] justify-center px-4 py-3 sm:py-2 rounded-xl font-bold text-white text-[13px] min-h-[44px] sm:min-h-0
+                  bg-gradient-to-r from-primary-600 via-primary-500 to-accent-violet
+                  hover:shadow-glow-primary transition-all duration-300
+                  ${remainingReviews === 0 ? '!bg-none bg-red-950/20 text-red-500 border border-red-500/30 hover:scale-100' : ''}
+                  ${isLoading ? 'animate-pulse-glow opacity-90' : 'hover:scale-105 active:scale-95'}
+                `}
+              >
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    {streaming ? 'Streaming...' : 'Analysing...'}
+                  </>
+                 ) : remainingReviews === 0 ? (
+                  <>
+                    <HelpCircle size={14} />
+                    {user ? 'Locked (0 Left)' : 'Locked (Sign In)'}
+                  </>
+                ) : (
+                  <>
+                    <Play size={16} fill="currentColor" />
+                    Review Code
+                  </>
+                )}
+              </button>
 
               {remainingReviews === 0 && (
-                <div className="absolute bottom-full mb-2 hidden group-hover:block bg-[var(--bg-surface)] border border-red-500/30 text-red-500 text-[10px] font-bold py-1 px-2 rounded-lg shadow-2xl whitespace-nowrap animate-slide-up z-50">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 hidden group-hover:block bg-[var(--bg-surface-3)] border border-red-500/30 text-red-500 text-[10px] font-bold py-1.5 px-3 rounded-lg shadow-2xl whitespace-nowrap animate-slide-up z-50 pointer-events-none">
                   {user ? 'Upgrade to continue' : 'Sign in to continue'}
                 </div>
               )}
-            </button>
+            </div>
           </div>
         </div>
 

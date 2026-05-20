@@ -33,7 +33,7 @@ public class AIService {
 
     private static final String GEMINI_BASE    = "https://generativelanguage.googleapis.com";
     private static final String GENERATE_PATH  = "/v1beta/models/%s:generateContent?key=%s";
-    private static final String DEFAULT_MODEL  = "gemini-2.5-flash";
+    private static final String DEFAULT_MODEL  = "gemini-3.1-flash-lite";
 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
@@ -43,7 +43,7 @@ public class AIService {
 
     public AIService(
             @Value("${app.gemini.api-key}") String apiKey,
-            @Value("${app.gemini.model:gemini-2.5-flash}") String model,
+            @Value("${app.gemini.model:gemini-3.1-flash-lite}") String model,
             @Value("${app.gemini.max-tokens:8192}") int maxTokens,
             ObjectMapper objectMapper) {
         this.apiKey = apiKey;
@@ -135,14 +135,17 @@ public class AIService {
         List<String> modelsToTry = new ArrayList<>();
         modelsToTry.add(this.model);
         
-        // Add gemini-2.5-flash-lite as the first fallback
-        if (!"gemini-2.5-flash-lite".equals(this.model)) {
-            modelsToTry.add("gemini-2.5-flash-lite");
-        }
+        List<String> priorityList = List.of(
+            "gemini-3.1-flash-lite",
+            "gemini-2.5-flash-lite",
+            "gemini-flash-latest",
+            "gemini-2.5-flash"
+        );
         
-        // Add gemini-flash-latest as the second fallback
-        if (!"gemini-flash-latest".equals(this.model)) {
-            modelsToTry.add("gemini-flash-latest");
+        for (String m : priorityList) {
+            if (!m.equals(this.model)) {
+                modelsToTry.add(m);
+            }
         }
 
         Exception lastException = null;

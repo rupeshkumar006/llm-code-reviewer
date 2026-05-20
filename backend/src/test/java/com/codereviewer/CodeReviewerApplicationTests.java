@@ -18,7 +18,7 @@ import org.springframework.test.context.TestPropertySource;
     "app.jwt.access-token-expiration=900000",
     "app.jwt.refresh-token-expiration=604800000",
     "app.gemini.api-key=test-placeholder",
-    "app.gemini.model=gemini-1.5-flash",
+    "app.gemini.model=gemini-3.1-flash-lite",
     "app.gemini.max-tokens=8192",
     "spring.security.oauth2.client.registration.google.client-id=placeholder",
     "spring.security.oauth2.client.registration.google.client-secret=placeholder",

@@ -239,7 +239,7 @@ public class ReviewService {
      */
     @Transactional(readOnly = true)
     public int getRemainingReviews(String email) {
-        if (email == null) return 5; // Default for display only, guests are tracked in sessionStorage
+        if (email == null) return 10; // Default for display only, guests are tracked in sessionStorage
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));

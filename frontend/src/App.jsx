@@ -35,30 +35,9 @@ function ProtectedRoute({ children }) {
 
 // Layout wrapper with Navbar (excludes auth pages + shared)
 function AppLayout({ children }) {
-  const { isAuthenticated } = useAuth();
-  const [remaining, setRemaining] = useState(undefined);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      reviewAPI.getRemaining()
-        .then(res => setRemaining(res.data.remaining))
-        .catch(() => {});
-    } else {
-      // For guest users, get remaining reviews from sessionStorage (default 5 free reviews)
-      const guestReviewsUsed = parseInt(sessionStorage.getItem('guestReviews') || '0', 10);
-      setRemaining(Math.max(0, 5 - guestReviewsUsed));
-    }
-
-    const handleUpdate = (e) => {
-      setRemaining(e.detail);
-    };
-    window.addEventListener('remaining-reviews-updated', handleUpdate);
-    return () => window.removeEventListener('remaining-reviews-updated', handleUpdate);
-  }, [isAuthenticated]);
-
   return (
     <div id="app-content" className="min-h-screen dark:bg-dark-950 bg-dot-grid transition-all duration-700">
-      <Navbar remainingReviews={remaining} />
+      <Navbar />
       {children}
     </div>
   );

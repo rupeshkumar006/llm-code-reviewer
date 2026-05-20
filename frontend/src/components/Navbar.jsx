@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { reviewAPI } from '../services/api';
 import {
   Code2, Sun, Moon, Monitor, LogOut, User, ChevronDown,
   BarChart3, Shield, Menu, X, Clock
@@ -12,7 +13,7 @@ const themes = [
   { key: 'system', icon: Monitor, label: 'System' },
 ];
 
-export default function Navbar({ remainingReviews }) {
+export default function Navbar() {
   const { user, logout, isAuthenticated, isPro } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,6 +24,25 @@ export default function Navbar({ remainingReviews }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
   const [scrolled, setScrolled] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  
+  const [remainingReviews, setRemainingReviews] = useState(undefined);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      reviewAPI.getRemaining()
+        .then(res => setRemainingReviews(res.data.remaining))
+        .catch(() => {});
+    } else {
+      const guestReviewsUsed = parseInt(sessionStorage.getItem('guestReviews') || '0', 10);
+      setRemainingReviews(Math.max(0, 10 - guestReviewsUsed));
+    }
+
+    const handleUpdate = (e) => {
+      setRemainingReviews(e.detail);
+    };
+    window.addEventListener('remaining-reviews-updated', handleUpdate);
+    return () => window.removeEventListener('remaining-reviews-updated', handleUpdate);
+  }, [isAuthenticated]);
 
   // Track scroll position for navbar border glow
   useEffect(() => {
