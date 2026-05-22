@@ -84,7 +84,7 @@ export default function LanguageSelector({ value, onChange }) {
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 top-full right-0 sm:left-0 w-[160px] rounded-xl bg-[var(--bg-surface)] border border-[var(--border)] shadow-glow-sm py-1 overflow-hidden animate-slide-up">
+        <div className="absolute z-50 mt-2 top-full left-0 w-[160px] rounded-xl bg-[var(--bg-surface)] border border-[var(--border)] shadow-glow-sm py-1 overflow-hidden animate-slide-up">
           <div className="max-h-[280px] overflow-y-auto scrollbar-thin">
             {LANGUAGES.map((lang) => (
               <button

@@ -120,6 +120,7 @@ export default function Review() {
   // Remaining Reviews Counter & Language Mismatch Dismiss state
   const [remainingReviews, setRemainingReviews] = useState(undefined);
   const [dismissMismatch, setDismissMismatch] = useState(false);
+  const [showLockedTooltip, setShowLockedTooltip] = useState(false);
 
   const fetchRemaining = async () => {
     try {
@@ -390,7 +391,15 @@ export default function Review() {
             </div>
 
             {/* Review button — takes remaining space on mobile */}
-            <div className="relative group flex-1 sm:flex-initial">
+            <div 
+              className="relative group flex-1 sm:flex-initial"
+              onClick={() => {
+                if (remainingReviews === 0) {
+                  setShowLockedTooltip(true);
+                  setTimeout(() => setShowLockedTooltip(false), 3000);
+                }
+              }}
+            >
               <button
                 onClick={handleReview}
                 disabled={isLoading || remainingReviews === 0}
@@ -423,7 +432,7 @@ export default function Review() {
               </button>
 
               {remainingReviews === 0 && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 hidden group-hover:block bg-[var(--bg-surface-3)] border border-red-500/30 text-red-500 text-[10px] font-bold py-1.5 px-3 rounded-lg shadow-2xl whitespace-nowrap animate-slide-up z-50 pointer-events-none">
+                <div className={`absolute bottom-full mb-2.5 bg-[var(--bg-surface-3)] border border-red-500/30 text-red-500 text-[10px] font-bold py-1.5 px-3 rounded-lg shadow-2xl whitespace-nowrap animate-slide-up z-50 pointer-events-none right-0 translate-x-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 ${showLockedTooltip ? 'block' : 'hidden group-hover:block'}`}>
                   {user ? 'Upgrade to continue' : 'Sign in to continue'}
                 </div>
               )}
